@@ -1,0 +1,14 @@
+# rank 5 - correct but far too short
+JORDAN REYES
+jordan.reyes@example.edu | (602) 555-0114 | linkedin.com/in/jreyes | github.com/jreyes
+EDUCATION
+State University, BS Computer Science, Aug 2023 - May 2027
+EXPERIENCE
+Software Engineering Intern, Northwind Systems, May 2026 - Aug 2026
+- Built an ingest service that cut median latency from 480 ms to 110 ms
+- Automated 9 release checks, removing 6 hours of manual work each sprint
+PROJECTS
+- Designed a 3-layer classifier reaching 94 percent accuracy
+SKILLS
+Python, Java, SQL, Docker
+

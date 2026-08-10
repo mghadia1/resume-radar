@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "resume-radar"
+version = "0.1.0"
+description = "Deterministic resume scoring against ATS-style checks and a job description"
+requires-python = ">=3.12"
+dependencies = [
+  "pdfminer.six>=20240706",
+  "pypdf>=5.0",
+]
+
+[project.optional-dependencies]
+# The API deps are in dev too: without them six tests skip silently and the service
+# could break while the suite stayed green.
+dev = ["pytest>=8.3", "httpx>=0.27", "fastapi>=0.115", "python-multipart>=0.0.9"]
+api = ["fastapi>=0.115", "uvicorn>=0.30", "python-multipart>=0.0.9"]
+
+[project.scripts]
+resume-radar = "resume_radar.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+resume_radar = ["index.html"]
+
+[tool.pytest.ini_options]
+# Point at src directly so `pytest -q tests` works from a clean checkout without
+# an install step, and so the suite always tests this tree rather than a stale
+# copy that happens to be on the path.
+pythonpath = ["src"]
+testpaths = ["tests"]

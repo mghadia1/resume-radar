@@ -1,0 +1,43 @@
+# rank 8 - first person throughout, tools miscapitalised
+JORDAN REYES
+jordan.reyes@example.edu | (602) 555-0114 | linkedin.com/in/jreyes | github.com/jreyes
+EDUCATION
+State University, BS Computer Science, Aug 2023 - May 2027
+Coursework: Data Structures, Algorithms, Linear Algebra, Operating Systems, Databases,
+Computer Networks, Discrete Mathematics, Software Engineering, Computer Organization,
+Programming Languages, Distributed Systems, Statistics for Engineers, Cryptography,
+Compilers, Machine Learning Foundations, Human Computer Interaction, Graph Theory
+Honors: Dean's List for 4 consecutive semesters, departmental scholarship recipient,
+finalist in the regional collegiate programming contest for 2 consecutive years
+EXPERIENCE
+Software Engineering Intern, Northwind Systems, May 2026 - Aug 2026
+- I built an ingest service and my team cut latency from 480 ms to 110 ms
+- I automated our release checks using python and docker in my first month
+- We diagnosed a cache stampede and I shipped my fix to our production cluster
+- I reduced our container image and my change cut cold starts for our clients
+Data Engineering Intern, Cobalt Analytics, May 2025 - Aug 2025
+- My team migrated pipelines and I reduced our failed nightly runs each week
+- I profiled our queries with postgresql and cut my daily report runtime
+- We documented runbooks and I wrote most of ours during our on-call rotation
+- I validated our schema changes against my historical rows before we migrated
+PROJECTS
+Distributed Cache, Jan 2026 - Apr 2026
+- My classifier used pytorch and numpy and I reached my accuracy target
+- I deployed our containers with kubernetes and cut our build time in half
+- We benchmarked parsers and I selected mine for our malformed input handling
+- I traced a memory leak in my handler and cut our steady state usage
+LEADERSHIP
+Computer Science Club, Sep 2025 - May 2026
+- I mentored students and my club members made their first contributions
+- We presented talks and I gave mine to our club across the spring semester
+- I organized our hackathon and my committee recruited judges from our area
+- I wrote a guide with javascript examples and my students used it for our course
+SKILLS
+Languages: Python, Java, JavaScript, TypeScript, SQL, Bash, Kotlin
+Frameworks: React, Flask, FastAPI, Django, Express, pytest, JUnit, Jest
+Infrastructure: Docker, Kubernetes, Terraform, Jenkins, Nginx, Linux, Git, GitHub
+Data: PostgreSQL, MongoDB, Redis, GraphQL, Kafka, Airflow, Snowflake, SQLite
+Tools: Jupyter, Figma, Tableau, Grafana, Postman, Wireshark, Valgrind, Make
+Certifications: AWS Certified Cloud Practitioner, Google Data Analytics Certificate
+Activities: ACM student chapter member, volunteer tutor for introductory programming,
+regional hackathon mentor for two consecutive years, open-source contributor

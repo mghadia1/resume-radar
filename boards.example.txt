@@ -1,0 +1,65 @@
+# Company job boards to pull from.
+#
+# Format:   <source>:<board-slug>      source is "greenhouse" or "lever"
+# Comments: everything after # is ignored
+#
+# Find a company's slug by opening its careers page and looking at the URL:
+#   boards.greenhouse.io/SLUG          -> greenhouse:SLUG
+#   jobs.lever.co/SLUG                 -> lever:SLUG
+#
+# A wrong slug just 404s: the run prints a warning for that board and continues.
+#
+# Only Greenhouse and Lever are supported. Both publish open, documented, no-auth
+# board APIs. LinkedIn and Indeed prohibit automated access in their terms, so they
+# are deliberately not implemented.
+#
+# Every slug below was fetched and confirmed to return open roles on 2026-07-30.
+# Companies do change ATS vendors, so re-check any board that starts warning.
+# Copy this to boards.txt and cut the ones you would not actually take.
+
+# --- infrastructure / developer tools ---
+greenhouse:stripe
+greenhouse:databricks
+greenhouse:gitlab
+greenhouse:cloudflare
+greenhouse:vercel
+greenhouse:twilio
+
+# --- product / consumer ---
+greenhouse:figma
+greenhouse:discord
+greenhouse:reddit
+greenhouse:pinterest
+greenhouse:duolingo
+greenhouse:airtable
+greenhouse:asana
+greenhouse:instacart
+
+# --- fintech ---
+greenhouse:robinhood
+greenhouse:affirm
+greenhouse:brex
+greenhouse:coinbase
+greenhouse:gusto
+greenhouse:flexport
+
+# --- AI / ML ---
+greenhouse:anthropic
+greenhouse:scaleai
+
+# --- robotics / autonomy / sensing ---
+greenhouse:waymo
+greenhouse:nuro
+greenhouse:samsara
+greenhouse:verkada
+
+# --- Lever boards ---
+lever:ro
+
+# --- defense-adjacent: usually screened out on an F-1 visa ---
+# Left in so you can watch the screener work, and because a minority of their roles
+# are not clearance-gated. Delete these two if the noise annoys you.
+lever:palantir
+lever:shieldai
+
+# --- add your own below ---

@@ -1,0 +1,234 @@
+{
+  "name": "ResumeRadar",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "ResumeRadar",
+        "formDescription": "Upload a resume and paste the job description. Returns a deterministic score, the checks that failed, and the job-description terms the resume never mentions.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Resume",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf,.docx,.txt",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Job Description",
+              "fieldType": "textarea",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Company",
+              "fieldType": "text",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Role",
+              "fieldType": "text",
+              "requiredField": false
+            }
+          ]
+        },
+        "responseMode": "responseNode"
+      },
+      "id": "form-trigger",
+      "name": "Resume Upload Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [-200, 300],
+      "webhookId": "resume-radar-form"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/score",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "Resume"
+            },
+            {
+              "name": "job_description",
+              "value": "={{ $json['Job Description'] || '' }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false
+            }
+          }
+        }
+      },
+      "id": "score-resume",
+      "name": "Score Resume",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [40, 300],
+      "notes": "Calls the ResumeRadar FastAPI service. The scoring logic lives in the Python package, not in this workflow, so the CLI and the workflow can never drift apart. Set this URL to wherever the service runs: localhost:8000 for self-hosted n8n, or a public tunnel URL for n8n Cloud, which cannot reach your machine."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "below-threshold",
+              "leftValue": "={{ $json.percent }}",
+              "rightValue": 80,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "needs-rewrite",
+      "name": "Score Below 80?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [280, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'claude-sonnet-5',\n  max_tokens: 1500,\n  messages: [{\n    role: 'user',\n    content: \"You are reviewing bullets from a student's software engineering resume.\\n\\nRewrite each bullet so that it:\\n- stays under 30 words\\n- opens with a strong past-tense action verb\\n- keeps every number, tool, and factual claim exactly as given\\n- invents nothing that is not already stated\\n\\nDo not add metrics that are not present. If a bullet has no measurable outcome, improve the verb and structure only.\\n\\nReturn strict JSON: {\\\"rewrites\\\": [{\\\"original\\\": \\\"...\\\", \\\"suggested\\\": \\\"...\\\", \\\"why\\\": \\\"...\\\"}]}\\n\\nBullets:\\n\" + ($json.checks.filter(c => !c.passed).flatMap(c => c.evidence).slice(0, 6).map(b => '- ' + b).join('\\n') || '- (none flagged)')\n  }]\n}) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "rewrite-bullets",
+      "name": "Rewrite Flagged Bullets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 200],
+      "notes": "The API key comes from an n8n credential. Never paste it into this node.",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "id": "merge-branches",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Flatten one run into a single spreadsheet row. The score fields come from the\n// service; the rewrite text is optional and only present on the low-score branch.\nconst form = $('Resume Upload Form').first().json;\nconst scored = $('Score Resume').first().json;\n\nlet rewrites = '';\nfor (const item of $input.all()) {\n  const blocks = item.json.content;\n  if (Array.isArray(blocks)) {\n    rewrites = blocks.map(b => b.text || '').join('');\n  }\n}\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    company: form.Company || '',\n    role: form.Role || '',\n    resume: scored.resume,\n    score: scored.score,\n    max_score: scored.max_score,\n    percent: scored.percent,\n    keyword_percent: scored.keywords ? scored.keywords.percent : '',\n    failed_checks: scored.checks.filter(c => !c.passed).map(c => c.key).join('; '),\n    missing_keywords: scored.keywords ? scored.keywords.missing.slice(0, 15).join('; ') : '',\n    rewrites,\n  },\n}];"
+      },
+      "id": "flatten-row",
+      "name": "Flatten For Sheets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "matchingColumns": [],
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "append-sheet",
+      "name": "Append To Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [1240, 300],
+      "notes": "Pick your spreadsheet and tab after import. Header row: timestamp, company, role, resume, score, max_score, percent, keyword_percent, failed_checks, missing_keywords, rewrites."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1480, 300]
+    }
+  ],
+  "connections": {
+    "Resume Upload Form": {
+      "main": [[{ "node": "Score Resume", "type": "main", "index": 0 }]]
+    },
+    "Score Resume": {
+      "main": [[{ "node": "Score Below 80?", "type": "main", "index": 0 }]]
+    },
+    "Score Below 80?": {
+      "main": [
+        [{ "node": "Rewrite Flagged Bullets", "type": "main", "index": 0 }],
+        [{ "node": "Merge", "type": "main", "index": 1 }]
+      ]
+    },
+    "Rewrite Flagged Bullets": {
+      "main": [[{ "node": "Merge", "type": "main", "index": 0 }]]
+    },
+    "Merge": {
+      "main": [[{ "node": "Flatten For Sheets", "type": "main", "index": 0 }]]
+    },
+    "Flatten For Sheets": {
+      "main": [[{ "node": "Append To Sheet", "type": "main", "index": 0 }]]
+    },
+    "Append To Sheet": {
+      "main": [[{ "node": "Respond", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "resume-radar"
+  },
+  "tags": []
+}

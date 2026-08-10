@@ -1,0 +1,43 @@
+# rank 4 - good content buried in 40-word unquantified bullets
+JORDAN REYES
+jordan.reyes@example.edu | (602) 555-0114 | linkedin.com/in/jreyes | github.com/jreyes
+EDUCATION
+State University, BS Computer Science, Aug 2023 - May 2027
+Coursework: Data Structures, Algorithms, Linear Algebra, Operating Systems, Databases,
+Computer Networks, Discrete Mathematics, Software Engineering, Computer Organization,
+Programming Languages, Distributed Systems, Statistics for Engineers, Cryptography,
+Compilers, Machine Learning Foundations, Human Computer Interaction, Graph Theory
+Honors: Dean's List for 4 consecutive semesters, departmental scholarship recipient,
+finalist in the regional collegiate programming contest for 2 consecutive years
+EXPERIENCE
+Software Engineering Intern, Northwind Systems, May 2026 - Aug 2026
+- Built an ingest service that cut median latency from  ms to  ms for  clients working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Automated  release checks, removing  hours of manual verification each sprint working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Diagnosed a cache stampede that caused  outages, then shipped a fix holding .% working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Reduced the container image from . GB to  MB, cutting cold starts by  seconds working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+Data Engineering Intern, Cobalt Analytics, May 2025 - Aug 2025
+- Migrated  pipelines to a scheduler, reducing failed nightly runs from  to  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Profiled  slow queries and cut the daily report from  minutes to  minutes working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Documented  runbooks that  engineers used during the following on-call rotation working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Validated  schema changes against  historical rows before the migration ran working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+PROJECTS
+Distributed Cache, Jan 2026 - Apr 2026
+- Designed a -layer classifier reaching  percent accuracy across  samples working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Deployed  containers to CI, cutting build time from  minutes to  minutes working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Benchmarked  parsers and selected the one that handled  of  malformed inputs working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Traced a memory leak to  handler, cutting steady-state usage from  MB to  MB working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+LEADERSHIP
+Computer Science Club, Sep 2025 - May 2026
+- Mentored  first-year students through their first  open-source contributions working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Presented  technical talks to a club of  members across the spring semester working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Organized a -team hackathon and recruited  judges from  local companies working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+- Wrote a guide that  students used to set up the course toolchain in  minutes working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem  working closely with the platform group on subsystem 
+SKILLS
+Languages: Python, Java, JavaScript, TypeScript, SQL, Bash, Kotlin
+Frameworks: React, Flask, FastAPI, Django, Express, pytest, JUnit, Jest
+Infrastructure: Docker, Kubernetes, Terraform, Jenkins, Nginx, Linux, Git, GitHub
+Data: PostgreSQL, MongoDB, Redis, GraphQL, Kafka, Airflow, Snowflake, SQLite
+Tools: Jupyter, Figma, Tableau, Grafana, Postman, Wireshark, Valgrind, Make
+Certifications: AWS Certified Cloud Practitioner, Google Data Analytics Certificate
+Activities: ACM student chapter member, volunteer tutor for introductory programming,
+regional hackathon mentor for two consecutive years, open-source contributor

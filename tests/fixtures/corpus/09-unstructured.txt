@@ -1,0 +1,23 @@
+# rank 9 - no section headers, no dates, no bullets
+JORDAN REYES
+jordan.reyes@example.edu
+I am a computer science student who has done a number of things with software.
+Built an ingest service that cut median latency from  ms to  ms for  clients
+Automated  release checks, removing  hours of manual verification each sprint
+Diagnosed a cache stampede that caused  outages, then shipped a fix holding .%
+Reduced the container image from . GB to  MB, cutting cold starts by  seconds
+Migrated  pipelines to a scheduler, reducing failed nightly runs from  to 
+Profiled  slow queries and cut the daily report from  minutes to  minutes
+Documented  runbooks that  engineers used during the following on-call rotation
+Validated  schema changes against  historical rows before the migration ran
+Designed a -layer classifier reaching  percent accuracy across  samples
+Deployed  containers to CI, cutting build time from  minutes to  minutes
+Benchmarked  parsers and selected the one that handled  of  malformed inputs
+Traced a memory leak to  handler, cutting steady-state usage from  MB to  MB
+Mentored  first-year students through their first  open-source contributions
+Presented  technical talks to a club of  members across the spring semester
+Organized a -team hackathon and recruited  judges from  local companies
+Wrote a guide that  students used to set up the course toolchain in  minutes
+I am looking for opportunities where I can grow and learn from a great team.
+I am a hard working team player who is detail oriented and a real go-getter.
+

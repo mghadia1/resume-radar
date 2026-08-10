@@ -1,0 +1,43 @@
+# rank 7 - passive voice and filler phrases throughout
+JORDAN REYES
+jordan.reyes@example.edu | (602) 555-0114 | linkedin.com/in/jreyes | github.com/jreyes
+EDUCATION
+State University, BS Computer Science, Aug 2023 - May 2027
+Coursework: Data Structures, Algorithms, Linear Algebra, Operating Systems, Databases,
+Computer Networks, Discrete Mathematics, Software Engineering, Computer Organization,
+Programming Languages, Distributed Systems, Statistics for Engineers, Cryptography,
+Compilers, Machine Learning Foundations, Human Computer Interaction, Graph Theory
+Honors: Dean's List for 4 consecutive semesters, departmental scholarship recipient,
+finalist in the regional collegiate programming contest for 2 consecutive years
+EXPERIENCE
+Software Engineering Intern, Northwind Systems, May 2026 - Aug 2026
+- Responsible for the ingest service, which was rebuilt by the platform group
+- Worked on release checks that were automated by another engineer last quarter
+- Helped with the cache issue that was diagnosed by the on-call rotation
+- Duties included the container image, which was reduced by the infra team
+Data Engineering Intern, Cobalt Analytics, May 2025 - Aug 2025
+- Assisted with pipelines that were migrated by the data group over the summer
+- Familiar with the queries that were profiled by a senior engineer in the spring
+- Involved in runbooks that were documented by the team during the rotation
+- Tasked with schema changes that were validated by the database administrator
+PROJECTS
+Distributed Cache, Jan 2026 - Apr 2026
+- Participated in a classifier project that was designed by the research group
+- Exposure to containers that were deployed by the release engineering team
+- Worked on parsers that were benchmarked by another intern during the term
+- Helped with a memory leak that was traced by the performance working group
+LEADERSHIP
+Computer Science Club, Sep 2025 - May 2026
+- Responsible for students who were mentored by the senior members of the club
+- Involved in talks that were presented by the officers across the semester
+- Assisted with a hackathon that was organized by the executive committee
+- Tasked with a guide that was written by the teaching assistants for the course
+SKILLS
+Languages: Python, Java, JavaScript, TypeScript, SQL, Bash, Kotlin
+Frameworks: React, Flask, FastAPI, Django, Express, pytest, JUnit, Jest
+Infrastructure: Docker, Kubernetes, Terraform, Jenkins, Nginx, Linux, Git, GitHub
+Data: PostgreSQL, MongoDB, Redis, GraphQL, Kafka, Airflow, Snowflake, SQLite
+Tools: Jupyter, Figma, Tableau, Grafana, Postman, Wireshark, Valgrind, Make
+Certifications: AWS Certified Cloud Practitioner, Google Data Analytics Certificate
+Activities: ACM student chapter member, volunteer tutor for introductory programming,
+regional hackathon mentor for two consecutive years, open-source contributor

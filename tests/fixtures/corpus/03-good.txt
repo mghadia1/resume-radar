@@ -1,0 +1,43 @@
+# rank 3 - good content, bullets running long
+JORDAN REYES
+jordan.reyes@example.edu | (602) 555-0114 | linkedin.com/in/jreyes | github.com/jreyes
+EDUCATION
+State University, BS Computer Science, Aug 2023 - May 2027
+Coursework: Data Structures, Algorithms, Linear Algebra, Operating Systems, Databases,
+Computer Networks, Discrete Mathematics, Software Engineering, Computer Organization,
+Programming Languages, Distributed Systems, Statistics for Engineers, Cryptography,
+Compilers, Machine Learning Foundations, Human Computer Interaction, Graph Theory
+Honors: Dean's List for 4 consecutive semesters, departmental scholarship recipient,
+finalist in the regional collegiate programming contest for 2 consecutive years
+EXPERIENCE
+Software Engineering Intern, Northwind Systems, May 2026 - Aug 2026
+- Built an ingest service that cut median latency from 480 ms to 110 ms for 12 clients across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Automated 9 release checks, removing 6 hours of manual verification each sprint across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Diagnosed a cache stampede that caused 3 outages, then shipped a fix holding 99.9% across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Reduced the container image from 1.4 GB to 320 MB, cutting cold starts by 11 seconds across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+Data Engineering Intern, Cobalt Analytics, May 2025 - Aug 2025
+- Migrated 14 pipelines to a scheduler, reducing failed nightly runs from 22 to 2 across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Profiled 5 slow queries and cut the daily report from 51 minutes to 8 minutes across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Documented 7 runbooks that 4 engineers used during the following on-call rotation across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Validated 3 schema changes against 40000 historical rows before the migration ran across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+PROJECTS
+Distributed Cache, Jan 2026 - Apr 2026
+- Designed a 3-layer classifier reaching 94 percent accuracy across 12000 samples across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Deployed 2 containers to CI, cutting build time from 11 minutes to 4 minutes across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Benchmarked 4 parsers and selected the one that handled 38 of 40 malformed inputs across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Traced a memory leak to 1 handler, cutting steady-state usage from 900 MB to 240 MB across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+LEADERSHIP
+Computer Science Club, Sep 2025 - May 2026
+- Mentored 3 first-year students through their first 2 open-source contributions across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Presented 4 technical talks to a club of 60 members across the spring semester across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Organized a 12-team hackathon and recruited 5 judges from 3 local companies across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+- Wrote a guide that 80 students used to set up the course toolchain in 20 minutes across the wider platform team for component 0 across the wider platform team for component 1 across the wider platform team for component 2
+SKILLS
+Languages: Python, Java, JavaScript, TypeScript, SQL, Bash, Kotlin
+Frameworks: React, Flask, FastAPI, Django, Express, pytest, JUnit, Jest
+Infrastructure: Docker, Kubernetes, Terraform, Jenkins, Nginx, Linux, Git, GitHub
+Data: PostgreSQL, MongoDB, Redis, GraphQL, Kafka, Airflow, Snowflake, SQLite
+Tools: Jupyter, Figma, Tableau, Grafana, Postman, Wireshark, Valgrind, Make
+Certifications: AWS Certified Cloud Practitioner, Google Data Analytics Certificate
+Activities: ACM student chapter member, volunteer tutor for introductory programming,
+regional hackathon mentor for two consecutive years, open-source contributor
