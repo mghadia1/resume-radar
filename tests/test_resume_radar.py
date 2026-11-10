@@ -242,6 +242,28 @@ def test_load_docx(tmp_path: Path):
     assert len(doc.bullets) == 4
 
 
+@pytest.fixture(params=["not_zip", "missing_document", "invalid_xml"])
+def malformed_docx(request) -> bytes:
+    """Invalid documents made entirely in memory, without personal data."""
+    if request.param == "not_zip":
+        return b"not a DOCX file"
+    payload = io.BytesIO()
+    with zipfile.ZipFile(payload, "w") as archive:
+        if request.param == "missing_document":
+            archive.writestr("other.xml", "<other/>")
+        else:
+            archive.writestr("word/document.xml", "<broken")
+    return payload.getvalue()
+
+
+def test_load_malformed_docx_raises_extraction_error(tmp_path: Path, malformed_docx: bytes):
+    path = tmp_path / "resume.docx"
+    path.write_bytes(malformed_docx)
+    with pytest.raises(ExtractionError, match="could not extract text") as error:
+        extract.load(path)
+    assert error.value.__cause__ is not None
+
+
 def test_load_missing_file_raises(tmp_path: Path):
     with pytest.raises(ExtractionError, match="no such file"):
         extract.load(tmp_path / "absent.pdf")
@@ -1476,6 +1498,18 @@ def test_api_reports_an_unreadable_pdf_as_unprocessable():
             "/score", files={"file": ("resume.pdf", b"not a pdf at all", "application/pdf")}
         )
     assert response.status_code == 422
+
+
+def test_api_reports_a_malformed_docx_as_unprocessable(malformed_docx: bytes):
+    fastapi_testclient = pytest.importorskip("fastapi.testclient")
+    from resume_radar.api import app
+
+    with fastapi_testclient.TestClient(app) as client:
+        response = client.post(
+            "/score", files={"file": ("resume.docx", malformed_docx)}
+        )
+    assert response.status_code == 422
+    assert "could not extract text" in response.json()["detail"]
 
 
 def test_api_rejects_an_unsupported_file_type():
