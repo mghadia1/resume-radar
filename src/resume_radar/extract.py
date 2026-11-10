@@ -487,9 +487,13 @@ def _docx_text(path: Path) -> str:
     import zipfile
 
     ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
-    with zipfile.ZipFile(path) as archive:
-        xml = archive.read("word/document.xml")
-    root = ET.fromstring(xml)
+    try:
+        with zipfile.ZipFile(path) as archive:
+            xml = archive.read("word/document.xml")
+        root = ET.fromstring(xml)
+    except (zipfile.BadZipFile, KeyError, ET.ParseError) as exc:
+        # Use the same failure contract as PDF extraction so the API returns 422.
+        raise ExtractionError(f"could not extract text from {path.name}: {exc}") from exc
     lines = []
     for para in root.iter(f"{{{ns['w']}}}p"):
         runs = [node.text or "" for node in para.iter(f"{{{ns['w']}}}t")]
