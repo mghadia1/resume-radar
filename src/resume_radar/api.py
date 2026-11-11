@@ -23,8 +23,8 @@ app = FastAPI(title="ResumeRadar", version=__version__)
 
 INDEX = Path(__file__).with_name("index.html")
 
-# Uploads are read fully into memory before being written to a temp file, so cap the
-# size rather than letting an arbitrary POST decide how much RAM to use.
+# Bound the in-memory copy from the parsed upload before writing a temp file.
+# Multipart parsing and spooling happen before this handler runs.
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 
 
@@ -50,7 +50,8 @@ async def score(
     if suffix not in {".pdf", ".docx", ".txt", ".md"}:
         raise HTTPException(status_code=415, detail=f"unsupported file type: {suffix}")
 
-    payload = await file.read()
+    # One extra byte distinguishes an exact-limit upload from an oversized one.
+    payload = await file.read(MAX_UPLOAD_BYTES + 1)
     if not payload:
         raise HTTPException(status_code=400, detail="empty upload")
     if len(payload) > MAX_UPLOAD_BYTES:
