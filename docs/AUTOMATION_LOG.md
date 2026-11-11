@@ -1,0 +1,4 @@
+# Automation log
+
+- 2026-11-10 18:58 UTC — Normalized invalid DOCX ZIP, missing document XML, and malformed XML failures to ExtractionError (API 422) on codex/resume-radar-docx-errors; six regressions failed before the fix; focused DOCX tests 7 passed, full suite 328 passed, workflow JSON validation and git diff --check passed (Python 3.14.7; no project lint/type checks configured); next: bound API upload reads before allocating the entire payload; READY TO MERGE.
+- 2026-11-11 19:06 UTC — Bounded /score upload copies to MAX_UPLOAD_BYTES + 1 on codex/resume-radar-bounded-uploads; four new regressions failed before the fix; focused API tests 14 passed (162 deselected), full suite 326 passed, workflow JSON validation and git diff --check passed (Python 3.14.7; no configured lint/type checks); multipart parsing/spooling remains upstream; next: deduplicate build_slate identities (synthetic duplicate consumes two slots); READY TO MERGE.
