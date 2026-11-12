@@ -175,6 +175,56 @@ def test_slate_reports_the_shortfall_rather_than_padding():
     assert slate.short == 9
 
 
+@pytest.mark.parametrize("fresh", [True, False])
+@pytest.mark.parametrize("another_opening", [True, False])
+def test_slate_duplicates_cannot_consume_slots_or_hide_a_shortfall(fresh, another_opening):
+    first = post("ML Intern", url="https://x/1")
+    # A board may repeat the object or return a separate copy with changed metadata.
+    duplicate = jobs.Posting(first.company, first.title, first.url,
+                             "Kubernetes Kafka", location="Elsewhere", source=first.source)
+    other = post("ML Intern", url="https://x/2")
+    posts = [first, first, duplicate] + ([other] if another_opening else [])
+
+    slate = jobs.build_slate(RESUME, posts, is_new=lambda p: fresh, target=2)
+
+    expected = [first, other] if another_opening else [first]
+    assert slate.picks == expected
+    assert slate.picks[0] is first  # The first copy supplies the posting's metadata.
+    assert slate.new == (expected if fresh else [])
+    assert slate.backfill == ([] if fresh else expected)
+    assert slate.short == (0 if another_opening else 1)
+
+
+@pytest.mark.parametrize("title,description,section", [
+    ("ML Intern", "Must be a US citizen. Python.", "filtered"),
+    ("Staff Engineer", "Python Docker", "off_level"),
+])
+def test_slate_reports_duplicate_exclusions_once(title, description, section):
+    first = post(title, description, url="https://x/1")
+    duplicate = post(title, description, url=first.url)
+
+    slate = jobs.build_slate(RESUME, [first, duplicate], is_new=lambda p: True)
+
+    assert getattr(slate, section) == [first]
+    assert slate.wrong_level == (1 if section == "off_level" else 0)
+    assert slate.picks == []
+
+
+@pytest.mark.parametrize("difference", [
+    {"source": "lever"}, {"company": "other"}, {"url": "https://x/2"},
+])
+def test_slate_keeps_postings_with_distinct_identities(difference):
+    fields = dict(company="acme", title="ML Intern", url="https://x/1",
+                  description="Python Docker", source="greenhouse")
+    first = jobs.Posting(**fields)
+    other = jobs.Posting(**(fields | difference))
+
+    slate = jobs.build_slate(RESUME, [first, first, other], is_new=lambda p: True, target=2)
+
+    assert slate.picks == [first, other]
+    assert slate.short == 0
+
+
 def test_slate_excludes_wrong_level_and_counts_them():
     posts = [post("ML Intern"), post("Staff Engineer"), post("Engineering Manager")]
     slate = jobs.build_slate(RESUME, posts, is_new=lambda p: True, target=10)
