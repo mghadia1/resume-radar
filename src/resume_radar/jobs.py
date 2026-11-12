@@ -383,7 +383,12 @@ def build_slate(resume_text: str, postings: list[Posting], *,
     ``target``, the best still-open older ones backfill the rest. A daily digest that
     says "nothing new" on a slow day is not useful, but a backfilled entry must be
     labelled as such so it is never mistaken for a fresh posting.
+
+    Repeated identities count once throughout the slate. The first copy supplies
+    the metadata, and input order is preserved for postings with equal fit.
     """
+    # Posting equality and hashing use (source, company, url), not scored fields.
+    postings = list(dict.fromkeys(postings))
     of_level = filter_levels(postings, levels)
     kept = set(of_level)
     off_level = [p for p in postings if p not in kept]
