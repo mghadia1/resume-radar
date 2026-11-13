@@ -52,7 +52,7 @@ BLOCKERS: dict[str, list[str]] = {
     ],
     "no_sponsorship": [
         r"(?:will|can|do) not (?:be able to )?sponsor",
-        r"(?:unable|not able) to (?:provide |offer )?sponsor",
+        r"(?:unable|not able) to (?:provide |offer )?(?:visa )?sponsor",
         r"no (?:visa )?sponsorship",
         r"does not (?:provide|offer) (?:visa )?sponsorship",
         r"without (?:the )?(?:need for )?(?:visa )?sponsorship",
@@ -240,7 +240,19 @@ def fetch(board: str, source: str, *, timeout: int = 20) -> list[Posting]:
 def screen(posting: Posting) -> Posting:
     """Flag hard eligibility blockers. Mutates and returns ``posting``."""
     text = f"{posting.title} {posting.description}"
-    posting.sponsorship_friendly = any(p.search(text) for p in COMPILED_FRIENDLY)
+    denial_spans = [
+        match.span()
+        for pattern in COMPILED_BLOCKERS["no_sponsorship"]
+        for match in pattern.finditer(text)
+    ]
+    # "Offer sponsorship" inside "does not offer sponsorship" is not an offer.
+    # Inspect every match so a separate affirmative offer still beats boilerplate.
+    posting.sponsorship_friendly = any(
+        not any(start < offer.end() and offer.start() < end
+                for start, end in denial_spans)
+        for pattern in COMPILED_FRIENDLY
+        for offer in pattern.finditer(text)
+    )
 
     found = []
     for name, patterns in COMPILED_BLOCKERS.items():
