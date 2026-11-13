@@ -89,6 +89,85 @@ def test_explicit_offer_to_sponsor_beats_boilerplate():
     assert post.eligible
 
 
+@pytest.mark.parametrize("text", [
+    "This employer does not offer visa sponsorship.",
+    "This employer does not offer sponsorship.",
+    "We are unable to sponsor visas.",
+    "We are not able to sponsor visas.",
+    "We are unable to offer visa sponsorship.",
+    "We are not able to offer sponsorship.",
+    "We are not able to offer visa sponsorship.",
+    "We are unable to provide visa sponsorship.",
+])
+@pytest.mark.parametrize("in_title", [False, True])
+def test_negated_sponsorship_offers_are_blockers(text, in_title):
+    title, description = (text, "Python") if in_title else ("ML Intern", text)
+    post = jobs.screen(jobs.Posting("acme", title, "u", description))
+
+    assert post.blockers == ["no_sponsorship"]
+    assert not post.sponsorship_friendly
+    assert not post.eligible
+
+
+@pytest.mark.parametrize("text", [
+    "We will sponsor visas.",
+    "We do sponsor visas.",
+    "We can sponsor visas.",
+    "We are happy to sponsor visas.",
+    "We are able to sponsor visas.",
+    "Sponsorship is available.",
+    "Sponsorship available.",
+    "We sponsor visas.",
+    "We offer visa sponsorship.",
+    "The employer offers sponsorship.",
+    "We are open to candidates requiring sponsorship.",
+])
+def test_affirmative_sponsorship_offers_remain_eligible(text):
+    post = jobs.screen(jobs.Posting("acme", "ML Intern", "u", text))
+
+    assert post.sponsorship_friendly
+    assert post.blockers == []
+    assert post.eligible
+
+
+@pytest.mark.parametrize("denial,offer", [
+    ("Another site does not offer visa sponsorship.", "We offer visa sponsorship."),
+    ("Another site is unable to sponsor visas.", "We are able to sponsor visas."),
+    ("Another site is unable to sponsor visas.", "We are happy to sponsor visas."),
+])
+@pytest.mark.parametrize("offer_first", [False, True])
+def test_separate_affirmative_offer_still_beats_sponsorship_boilerplate(
+        denial, offer, offer_first):
+    text = f"{offer} {denial}" if offer_first else f"{denial} {offer}"
+    post = jobs.screen(jobs.Posting("acme", "ML Intern", "u", text))
+
+    assert post.sponsorship_friendly
+    assert post.blockers == []
+    assert post.eligible
+
+
+def test_sponsorship_offer_cannot_override_other_blockers():
+    text = "We offer sponsorship. Applicants must be a US citizen."
+    post = jobs.screen(jobs.Posting("acme", "ML Intern", "u", text))
+
+    assert post.sponsorship_friendly
+    assert post.blockers == ["citizenship"]
+    assert not post.eligible
+
+
+def test_negated_sponsorship_offer_is_excluded_from_ranking_and_slate():
+    denied = jobs.Posting("acme", "ML Intern", "u1",
+                          "Python. This employer does not offer visa sponsorship.")
+    allowed = jobs.Posting("beta", "ML Intern", "u2", "Python.")
+
+    assert jobs.rank("Python", [denied, allowed]) == [allowed]
+    assert jobs.rank("Python", [denied], include_ineligible=True) == [denied]
+    slate = jobs.build_slate("Python", [denied, allowed], is_new=lambda p: True, target=2)
+    assert slate.picks == [allowed]
+    assert slate.filtered == [denied]
+    assert slate.short == 1
+
+
 def test_ordinary_posting_has_no_blockers():
     post = jobs.screen(jobs.Posting("acme", "ML Intern", "u",
                                     "Python, PyTorch, Docker. Great team."))
