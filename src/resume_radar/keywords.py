@@ -89,7 +89,7 @@ SOFT_SKILLS = {
 WEIGHTS = {"hard": 3.0, "soft": 1.0, "other": 1.0}
 TITLE_WEIGHT = 6.0
 
-TOKEN_RE = re.compile(r"[a-z][a-z0-9+#./_-]{1,}")
+TOKEN_RE = re.compile(r"[a-z][a-z0-9+#./_-]*")
 TECHNICAL_RE = re.compile(r"[0-9+#]")
 
 # Postings label the title in a handful of predictable ways; otherwise the first
@@ -157,7 +157,8 @@ def _counted(text: str) -> dict[str, int]:
 
     for token in TOKEN_RE.findall(flat):
         token = token.strip("./-_")
-        if len(token) > 2 and token not in STOPWORDS:
+        # Keep known short skills (C, R, Go, C#) without admitting short noise.
+        if (len(token) > 2 or token in HARD_SKILLS) and token not in STOPWORDS:
             counts[token] = counts.get(token, 0) + 1
     return counts
 
