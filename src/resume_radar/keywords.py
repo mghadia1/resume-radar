@@ -91,6 +91,10 @@ TITLE_WEIGHT = 6.0
 
 TOKEN_RE = re.compile(r"[a-z][a-z0-9+#./_-]{1,}")
 TECHNICAL_RE = re.compile(r"[0-9+#]")
+# Prefer the longest complete phrase so "unit test" cannot consume "unit testing".
+PHRASE_RE = re.compile(
+    r"\b(?:" + "|".join(re.escape(p) for p in sorted(PHRASES, key=len, reverse=True)) + r")\b"
+)
 
 # Postings label the title in a handful of predictable ways; otherwise the first
 # non-empty line is the title far more often than not.
@@ -149,11 +153,12 @@ def _counted(text: str) -> dict[str, int]:
     flat = _normalize(text)
     counts: dict[str, int] = {}
 
-    for phrase in PHRASES:
-        hits = flat.count(phrase)
-        if hits:
-            counts[phrase] = hits
-            flat = flat.replace(phrase, " ")
+    def count_phrase(match: re.Match[str]) -> str:
+        phrase = match.group()
+        counts[phrase] = counts.get(phrase, 0) + 1
+        return " "
+
+    flat = PHRASE_RE.sub(count_phrase, flat)
 
     for token in TOKEN_RE.findall(flat):
         token = token.strip("./-_")
