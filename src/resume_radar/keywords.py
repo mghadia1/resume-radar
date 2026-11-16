@@ -198,7 +198,8 @@ def title_present(title: str, resume_text: str) -> bool:
         return False
     haystack = re.sub(r"[^a-z ]", " ", resume_text.lower())
     haystack = " ".join(haystack.split())
-    return " ".join(words) in haystack
+    # Both sides are space-normalized: padding requires complete boundary words.
+    return f" {' '.join(words)} " in f" {haystack} "
 
 
 def compare(resume_text: str, job_description: str) -> KeywordMatch:
