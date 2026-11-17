@@ -189,14 +189,16 @@ def title_present(title: str, resume_text: str) -> bool:
     """True when the posting's title appears on the resume, ignoring seniority noise.
 
     "Software Engineer Intern - Summer 2027" and "Software Engineer" are the same
-    claim as far as a recruiter scanning for the title is concerned.
+    claim as far as a recruiter scanning for the title is concerned. Technical
+    qualifiers such as C++, C#, Go, and Python3 remain part of the title.
     """
     core = TITLE_NOISE_RE.sub(" ", title.lower())
-    core = re.sub(r"[^a-z ]", " ", core)
-    words = [w for w in core.split() if len(w) > 2 and w not in STOPWORDS]
+    core = re.sub(r"[^a-z0-9+# ]", " ", core)
+    words = [w for w in core.split()
+             if (len(w) > 2 or w in HARD_SKILLS) and w not in STOPWORDS]
     if not words:
         return False
-    haystack = re.sub(r"[^a-z ]", " ", resume_text.lower())
+    haystack = re.sub(r"[^a-z0-9+# ]", " ", resume_text.lower())
     haystack = " ".join(haystack.split())
     return " ".join(words) in haystack
 
