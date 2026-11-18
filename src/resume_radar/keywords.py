@@ -197,7 +197,9 @@ def title_present(title: str, resume_text: str) -> bool:
     if not words:
         return False
     haystack = re.sub(r"[^a-z ]", " ", resume_text.lower())
-    haystack = " ".join(haystack.split())
+    # The title core omits stopwords; omit them here too ("Head of Research").
+    # Keep other words, even short ones, so "Software QA Engineer" stays distinct.
+    haystack = " ".join(w for w in haystack.split() if w not in STOPWORDS)
     return " ".join(words) in haystack
 
 
