@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import http.client
 import json
+import logging
 import re
 import urllib.error
 import urllib.request
@@ -27,6 +28,7 @@ GREENHOUSE_URL = "https://boards-api.greenhouse.io/v1/boards/{board}/jobs?conten
 LEVER_URL = "https://api.lever.co/v0/postings/{board}?mode=json"
 
 USER_AGENT = "resume-radar/0.3 (personal job search; contact via GitHub mghadia1)"
+logger = logging.getLogger(__name__)
 
 
 # --------------------------------------------------------------------------- #
@@ -167,44 +169,62 @@ class Posting:
 # --------------------------------------------------------------------------- #
 
 def parse_greenhouse(payload: dict, company: str) -> list[Posting]:
-    """Turn a Greenhouse ``/jobs?content=true`` payload into postings."""
+    """Parse postings, warning and skipping individual structural failures."""
+    if not isinstance(payload, dict) or not isinstance(payload.get("jobs", []), list):
+        raise TypeError("expected a Greenhouse object containing a jobs list")
     out = []
-    for job in payload.get("jobs", []):
-        out.append(Posting(
-            company=company,
-            title=job.get("title", ""),
-            url=job.get("absolute_url", ""),
-            description=strip_html(job.get("content", "")),
-            location=(job.get("location") or {}).get("name", ""),
-            source="greenhouse",
-        ))
+    for index, job in enumerate(payload.get("jobs", [])):
+        try:
+            out.append(Posting(
+                company=company,
+                title=job.get("title", ""),
+                url=job.get("absolute_url", ""),
+                description=strip_html(job.get("content", "")),
+                location=(job.get("location") or {}).get("name", ""),
+                source="greenhouse",
+            ))
+        except (AttributeError, TypeError, KeyError) as exc:
+            # Do not log the payload or exception message: either may contain data.
+            logger.warning("Skipping malformed greenhouse/%s posting at index %d (%s)",
+                           company, index, type(exc).__name__)
+    if payload.get("jobs") and not out:
+        raise TypeError("no parseable Greenhouse postings")
     return out
 
 
 def parse_lever(payload: list, company: str) -> list[Posting]:
-    """Turn a Lever ``/v0/postings`` payload into postings."""
+    """Parse postings, warning and skipping individual structural failures."""
+    if not isinstance(payload, list):
+        raise TypeError("expected a Lever postings list")
     out = []
-    for job in payload:
-        body = job.get("descriptionPlain") or strip_html(job.get("description", ""))
-        lists = " ".join(
-            strip_html(section.get("content", "")) for section in job.get("lists", [])
-        )
-        out.append(Posting(
-            company=company,
-            title=job.get("text", ""),
-            url=job.get("hostedUrl", ""),
-            description=f"{body} {lists}".strip(),
-            location=(job.get("categories") or {}).get("location", ""),
-            source="lever",
-        ))
+    for index, job in enumerate(payload):
+        try:
+            body = job.get("descriptionPlain") or strip_html(job.get("description", ""))
+            lists = " ".join(
+                strip_html(section.get("content", "")) for section in job.get("lists", [])
+            )
+            out.append(Posting(
+                company=company,
+                title=job.get("text", ""),
+                url=job.get("hostedUrl", ""),
+                description=f"{body} {lists}".strip(),
+                location=(job.get("categories") or {}).get("location", ""),
+                source="lever",
+            ))
+        except (AttributeError, TypeError, KeyError) as exc:
+            logger.warning("Skipping malformed lever/%s posting at index %d (%s)",
+                           company, index, type(exc).__name__)
+    if payload and not out:
+        raise TypeError("no parseable Lever postings")
     return out
 
 
 def fetch(board: str, source: str, *, timeout: int = 20) -> list[Posting]:
     """Fetch one company board. ``source`` is ``greenhouse`` or ``lever``.
 
-    Every network and parse failure becomes a ``RuntimeError`` so the caller can warn
-    and move to the next board. Catching only ``URLError`` is not enough and was found
+    Network and board-level parse failures become ``RuntimeError``; individual
+    structurally malformed postings are skipped with warnings. Catching only
+    ``URLError`` is not enough and was found
     the hard way against 29 live boards: a server that drops the connection mid-read
     raises ``http.client.RemoteDisconnected``, a read that stalls raises
     ``TimeoutError``, and neither is a ``URLError`` - so one flaky board aborted the

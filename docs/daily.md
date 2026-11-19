@@ -187,6 +187,15 @@ is recoverable, losing the morning's run is not — so it is enforced in two pla
 `jobs.fetch` converts the failures it knows about, and the loop in `cli._fetch_boards`
 catches everything else.
 
+Within a correctly shaped response, a posting that raises a structural parse error is
+skipped while its valid siblings remain in order. Each skipped record logs the board,
+zero-based index, and exception type, without posting contents. The whole record is
+discarded, including when a malformed section prevents reading its eligibility text.
+Invalid response containers and nonempty lists with no parseable records remain board
+errors; empty boards still succeed. This is parse-error isolation, not full field-schema
+validation: missing or wrongly typed fields that do not raise during parsing may still
+need validation before ranking.
+
 This was not theoretical. Running against 29 live boards raised
 `http.client.RemoteDisconnected`, which is **not** a `URLError`, and the entire run
 died. Tests that mock a tidy exception will not find that; only pointing it at real
