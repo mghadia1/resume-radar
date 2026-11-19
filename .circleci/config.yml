@@ -1,0 +1,27 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: cimg/python:3.12
+    resource_class: small
+    steps:
+      - checkout
+      - run:
+          name: Install project and test dependencies
+          command: |
+            python -m pip install --upgrade pip
+            python -m pip install -e '.[dev,api]'
+      - run:
+          name: Run the full test suite
+          command: python -m pytest -q tests --junitxml=test-results/pytest.xml
+      - store_test_results:
+          path: test-results
+      - run:
+          name: Validate the n8n workflow JSON
+          command: python -c "import json; json.load(open('n8n/resume-radar.json'))"
+
+workflows:
+  tests:
+    jobs:
+      - test
