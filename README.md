@@ -230,6 +230,13 @@ and a single percentage hides that.
 python -m pytest -q tests
 ```
 
+`.circleci/config.yml` provides an external CI job using Python 3.12. It installs
+`.[dev,api]`, runs the full test suite, uploads a JUnit test report, and validates the
+n8n workflow JSON. To activate it, connect this repository through CircleCI's GitHub
+App, use `.circleci/config.yml` from the branch being built, and enable push/PR
+triggers. The job needs no project secrets. Adding the file alone does not activate
+CircleCI or replace any required GitHub Actions checks.
+
 91 tests. Fixtures are generated — the PDF is assembled byte by byte in the test module
 and the DOCX is a zip built in memory — so the suite depends on no personal files, no
 network, and no poppler install. The model call is mocked; no test hits the API.
