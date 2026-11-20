@@ -187,6 +187,11 @@ is recoverable, losing the morning's run is not — so it is enforced in two pla
 `jobs.fetch` converts the failures it knows about, and the loop in `cli._fetch_boards`
 catches everything else.
 
+Both board parsers require titles and posting URLs to be nonblank strings. A
+missing, null, or wrongly typed field rejects the board through the same warning
+path, before level filtering or watchlist storage can fail. Valid strings are kept
+verbatim; this check does not validate URL syntax or normalize posting identities.
+
 This was not theoretical. Running against 29 live boards raised
 `http.client.RemoteDisconnected`, which is **not** a `URLError`, and the entire run
 died. Tests that mock a tidy exception will not find that; only pointing it at real

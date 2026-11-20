@@ -166,14 +166,23 @@ class Posting:
 # Parsing - pure functions so they can be tested without network
 # --------------------------------------------------------------------------- #
 
+def _required_text(job: dict, key: str) -> str:
+    """Require usable title/identity text without coercing malformed board data."""
+    value = job.get(key)
+    if not isinstance(value, str) or not value.strip():
+        # Keep values out of errors: fetch() includes the message in CLI warnings.
+        raise TypeError(f"expected nonblank string for {key}")
+    return value
+
+
 def parse_greenhouse(payload: dict, company: str) -> list[Posting]:
     """Turn a Greenhouse ``/jobs?content=true`` payload into postings."""
     out = []
     for job in payload.get("jobs", []):
         out.append(Posting(
             company=company,
-            title=job.get("title", ""),
-            url=job.get("absolute_url", ""),
+            title=_required_text(job, "title"),
+            url=_required_text(job, "absolute_url"),
             description=strip_html(job.get("content", "")),
             location=(job.get("location") or {}).get("name", ""),
             source="greenhouse",
@@ -191,8 +200,8 @@ def parse_lever(payload: list, company: str) -> list[Posting]:
         )
         out.append(Posting(
             company=company,
-            title=job.get("text", ""),
-            url=job.get("hostedUrl", ""),
+            title=_required_text(job, "text"),
+            url=_required_text(job, "hostedUrl"),
             description=f"{body} {lists}".strip(),
             location=(job.get("categories") or {}).get("location", ""),
             source="lever",
