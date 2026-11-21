@@ -187,6 +187,13 @@ is recoverable, losing the morning's run is not — so it is enforced in two pla
 `jobs.fetch` converts the failures it knows about, and the loop in `cli._fetch_boards`
 catches everything else.
 
+Both board parsers require absolute HTTP(S) posting URLs with a hostname and no
+credentials. They reject invalid ports/brackets, backslashes, and raw whitespace or
+control characters rather than repairing the link. Accepted URLs retain their exact
+spelling, query, and fragment for identity tracking. An invalid URL follows the same
+board-error path above; other boards continue. This checks link shape, not whether the
+destination exists or is trustworthy.
+
 This was not theoretical. Running against 29 live boards raised
 `http.client.RemoteDisconnected`, which is **not** a `URLError`, and the entire run
 died. Tests that mock a tidy exception will not find that; only pointing it at real
