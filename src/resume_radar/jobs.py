@@ -17,6 +17,7 @@ import http.client
 import json
 import re
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -166,6 +167,29 @@ class Posting:
 # Parsing - pure functions so they can be tested without network
 # --------------------------------------------------------------------------- #
 
+def _posting_url(value: object) -> str:
+    """Require a web link without silently changing its posting identity."""
+    try:
+        # urlsplit strips some controls/whitespace. Reject them before parsing so
+        # validation describes the exact URL that the digest and watchlist receive.
+        if not isinstance(value, str) or any(
+            c.isspace() or ord(c) < 32 or ord(c) == 127 or c == "\\" for c in value
+        ):
+            raise ValueError
+        parsed = urllib.parse.urlsplit(value)
+        if (parsed.scheme not in {"http", "https"} or not parsed.hostname
+                or parsed.username is not None):
+            raise ValueError
+        # Accessing port also checks for nonnumeric and out-of-range ports.
+        _ = parsed.port
+    except ValueError:
+        # fetch() prints parse errors. Never echo URL credentials or query data.
+        raise TypeError(
+            "expected absolute HTTP(S) posting URL without credentials"
+        ) from None
+    return value
+
+
 def parse_greenhouse(payload: dict, company: str) -> list[Posting]:
     """Turn a Greenhouse ``/jobs?content=true`` payload into postings."""
     out = []
@@ -173,7 +197,7 @@ def parse_greenhouse(payload: dict, company: str) -> list[Posting]:
         out.append(Posting(
             company=company,
             title=job.get("title", ""),
-            url=job.get("absolute_url", ""),
+            url=_posting_url(job.get("absolute_url", "")),
             description=strip_html(job.get("content", "")),
             location=(job.get("location") or {}).get("name", ""),
             source="greenhouse",
@@ -192,7 +216,7 @@ def parse_lever(payload: list, company: str) -> list[Posting]:
         out.append(Posting(
             company=company,
             title=job.get("text", ""),
-            url=job.get("hostedUrl", ""),
+            url=_posting_url(job.get("hostedUrl", "")),
             description=f"{body} {lists}".strip(),
             location=(job.get("categories") or {}).get("location", ""),
             source="lever",
