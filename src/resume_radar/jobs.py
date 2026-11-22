@@ -58,6 +58,7 @@ BLOCKERS: dict[str, list[str]] = {
         r"without (?:the )?(?:need for )?(?:visa )?sponsorship",
         r"not eligible for (?:visa )?sponsorship",
         r"sponsorship is not available",
+        r"\b(?:cannot|(?:can|won|don)['’]t)\s+sponsor\b",
     ],
     "export_control": [
         r"\bitar\b",
