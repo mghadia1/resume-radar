@@ -28,6 +28,12 @@ resume-radar watch ... --levels intern,new_grad,mid
 Postings blocked by citizenship, clearance, sponsorship, or ITAR are listed the same
 way, with the reason. Both lists exist so a wrong screen is visible rather than silent.
 
+Sponsorship screening recognizes direct `cannot sponsor`, `can't sponsor`,
+`won't sponsor`, and `don't sponsor` denials in titles or descriptions, including
+curly apostrophes. These are reported as `no_sponsorship` and excluded from both new
+and carried-over picks. Screening remains lexical; a separate affirmative offer to
+sponsor still takes precedence over denial boilerplate elsewhere in the posting.
+
 ## Setup
 
 ```bash
