@@ -28,6 +28,12 @@ resume-radar watch ... --levels intern,new_grad,mid
 Postings blocked by citizenship, clearance, sponsorship, or ITAR are listed the same
 way, with the reason. Both lists exist so a wrong screen is visible rather than silent.
 
+Sponsorship screening recognizes direct third-person denials such as “this employer
+does not sponsor visas” and “this company doesn't sponsor visas,” including curly
+apostrophes, case differences, and whitespace between words. These are read from both
+the title and description. A separate affirmative offer still takes precedence.
+Screening is lexical and cannot resolve contradictory policies.
+
 ## Setup
 
 ```bash
