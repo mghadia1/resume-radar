@@ -12,8 +12,11 @@ trips the no-sponsorship pattern and should not.
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from datetime import date
+from html import escape
+from urllib.parse import quote
 
 #: How many screened-out postings to name before summarising the rest. A real run
 #: drops thousands; an unbounded list is as unreadable as no list at all.
@@ -27,8 +30,24 @@ BLOCKER_LABELS = {
 }
 
 
+def _text(value: object) -> str:
+    """Keep external text on one line, with HTML and Markdown syntax literal."""
+    plain = escape(" ".join(str(value).split()), quote=False)
+    return re.sub(r"([\\`*{}\[\]()#+\-.!_|~])", r"\\\1", plain)
+
+
+def _url(value: str) -> str:
+    """Contain URL delimiters in a Markdown autolink without mutating identity.
+
+    This encodes presentation syntax; URL validation belongs at the parser boundary.
+    """
+    encoded = quote(str(value), safe=":/?#[]@!$&'()*+,;=%")
+    # Autolinks treat entities literally: HTML-escaping '&' would alter query keys.
+    return f"<{encoded}>"
+
+
 def _blockers(posting) -> str:
-    return ", ".join(BLOCKER_LABELS.get(b, b) for b in posting.blockers)
+    return _text(", ".join(BLOCKER_LABELS.get(b, b) for b in posting.blockers))
 
 
 def _level_label(title: str) -> str:
@@ -72,7 +91,7 @@ def render(new_postings: list, *, already_seen: int = 0, filtered: list | None =
 
     if boards_failed:
         lines += ["", f"> {len(boards_failed)} board(s) could not be reached this run: "
-                      f"{', '.join(boards_failed)}"]
+                      f"{_text(', '.join(boards_failed))}"]
 
     if not new_postings and not backfill:
         lines += ["", "Nothing new today."]
@@ -80,15 +99,17 @@ def render(new_postings: list, *, already_seen: int = 0, filtered: list | None =
         lines.append("")
         for posting in new_postings:
             flag = "  [title match]" if posting.match and posting.match.title_matched else ""
-            lines.append(f"## {posting.fit:.0f}% · {posting.company} — {posting.title}{flag}")
-            lines.append(f"{posting.location or 'location not stated'} · {posting.url}")
+            lines.append(f"## {posting.fit:.0f}% · {_text(posting.company)} — "
+                         f"{_text(posting.title)}{flag}")
+            lines.append(f"{_text(posting.location or 'location not stated')} · "
+                         f"{_url(posting.url)}")
             if posting.match:
                 missing = ", ".join(posting.match.priority[:8])
                 have = ", ".join(posting.match.hard_matched[:8])
                 if missing:
-                    lines.append(f"Missing: {missing}")
+                    lines.append(f"Missing: {_text(missing)}")
                 if have:
-                    lines.append(f"Have: {have}")
+                    lines.append(f"Have: {_text(have)}")
             if posting.sponsorship_friendly:
                 lines.append("_Posting mentions sponsorship is available._")
             lines.append("")
@@ -100,8 +121,8 @@ def render(new_postings: list, *, already_seen: int = 0, filtered: list | None =
                   "_Carried over to fill the shortlist. You have seen these before._",
                   ""]
         for posting in backfill:
-            lines.append(f"- **{posting.fit:.0f}%** {posting.company} — "
-                         f"{posting.title} · {posting.url}")
+            lines.append(f"- **{posting.fit:.0f}%** {_text(posting.company)} — "
+                         f"{_text(posting.title)} · {_url(posting.url)}")
 
     if off_level:
         # Listed, not just counted: the level filter is a heuristic on the title, and a
@@ -116,8 +137,8 @@ def render(new_postings: list, *, already_seen: int = 0, filtered: list | None =
             "",
         ]
         for posting in off_level[:SAMPLE]:
-            lines.append(f"- **{posting.company} — {posting.title}** · reads as "
-                         f"`{_level_label(posting.title)}` · {posting.url}")
+            lines.append(f"- **{_text(posting.company)} — {_text(posting.title)}** · reads as "
+                         f"`{_level_label(posting.title)}` · {_url(posting.url)}")
         if len(off_level) > SAMPLE:
             counts = Counter(_level_label(p.title) for p in off_level)
             breakdown = ", ".join(f"{n} {name}" for name, n in counts.most_common())
@@ -133,13 +154,13 @@ def render(new_postings: list, *, already_seen: int = 0, filtered: list | None =
             "",
         ]
         for posting in filtered[:SAMPLE]:
-            lines.append(f"- **{posting.company} — {posting.title}** · {_blockers(posting)} "
-                         f"· {posting.url}")
+            lines.append(f"- **{_text(posting.company)} — {_text(posting.title)}** · "
+                         f"{_blockers(posting)} · {_url(posting.url)}")
         if len(filtered) > SAMPLE:
             counts = Counter(b for p in filtered for b in p.blockers)
             breakdown = ", ".join(f"{n} {BLOCKER_LABELS.get(k, k)}"
                                   for k, n in counts.most_common())
-            lines.append(f"- _…and {len(filtered) - SAMPLE} more: {breakdown}_")
+            lines.append(f"- _…and {len(filtered) - SAMPLE} more: {_text(breakdown)}_")
         lines += ["", "</details>"]
 
     lines += [
