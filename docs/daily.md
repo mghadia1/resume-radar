@@ -28,6 +28,13 @@ resume-radar watch ... --levels intern,new_grad,mid
 Postings blocked by citizenship, clearance, sponsorship, or ITAR are listed the same
 way, with the reason. Both lists exist so a wrong screen is visible rather than silent.
 
+Posting metadata is rendered as literal text: HTML and Markdown syntax is escaped,
+and embedded whitespace is collapsed to keep it within its digest entry. Posting URLs
+use Markdown autolinks with delimiters percent-encoded, preserving query separators
+and existing percent escapes. This affects presentation only; posting identity,
+watchlist storage, and JSON retain the original values. Output escaping does not
+validate URL schemes, credentials, or destination trust.
+
 ## Setup
 
 ```bash

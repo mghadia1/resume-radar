@@ -15,7 +15,7 @@ dependencies = [
 [project.optional-dependencies]
 # The API deps are in dev too: without them six tests skip silently and the service
 # could break while the suite stayed green.
-dev = ["pytest>=8.3", "httpx>=0.27", "fastapi>=0.115", "python-multipart>=0.0.9"]
+dev = ["pytest>=8.3", "httpx>=0.27", "fastapi>=0.115", "python-multipart>=0.0.9", "markdown-it-py>=4.0"]
 api = ["fastapi>=0.115", "uvicorn>=0.30", "python-multipart>=0.0.9"]
 
 [project.scripts]
