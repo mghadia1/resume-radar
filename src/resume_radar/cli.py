@@ -168,6 +168,26 @@ def _run_watch(args) -> int:
                              off_level=slate.off_level, short=slate.short,
                              target=args.target)
 
+        if args.out:
+            Path(args.out).write_text(text, encoding="utf-8")
+
+        # Finish both output sinks before changing history. Flush stdout so a
+        # buffered write failure also leaves these postings new for a retry.
+        pruned_note = "" if not args.dry_run else "  (dry run - nothing recorded)"
+        if args.json:
+            print(json.dumps({
+                "new": [p.to_dict() for p in slate.new],
+                "backfill": [p.to_dict() for p in slate.backfill],
+                "off_level": [p.to_dict() for p in slate.off_level],
+                "wrong_level": slate.wrong_level,
+                "short": slate.short,
+                "already_seen": already,
+                "filtered": [p.to_dict() for p in filtered],
+                "boards_failed": failed,
+            }, indent=2), flush=True)
+        else:
+            print(text + pruned_note, flush=True)
+
         if not args.dry_run:
             # Mark every eligible posting seen, not just the ones that cleared
             # --min-fit: a posting below the bar today should not resurface tomorrow
@@ -178,26 +198,8 @@ def _run_watch(args) -> int:
             store.mark_seen(eligible)
             store.mark_seen(filtered)
             store.prune(args.prune_days)
-        pruned_note = "" if not args.dry_run else "  (dry run - nothing recorded)"
     finally:
         store.close()
-
-    if args.out:
-        Path(args.out).write_text(text, encoding="utf-8")
-
-    if args.json:
-        print(json.dumps({
-            "new": [p.to_dict() for p in slate.new],
-            "backfill": [p.to_dict() for p in slate.backfill],
-            "off_level": [p.to_dict() for p in slate.off_level],
-            "wrong_level": slate.wrong_level,
-            "short": slate.short,
-            "already_seen": already,
-            "filtered": [p.to_dict() for p in filtered],
-            "boards_failed": failed,
-        }, indent=2))
-    else:
-        print(text + pruned_note)
 
     # An empty day is a successful day. Exiting non-zero would mark the scheduled
     # job as failed every time there is simply nothing new.
