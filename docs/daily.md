@@ -53,6 +53,13 @@ resume-radar watch --resume ~/resume.pdf --boards ~/.resume-radar/boards.txt --d
 `--dry-run` reports without recording, so you can run it repeatedly while you tune
 `--min-fit` without burning through the "new" postings.
 
+Seen records and pruning are updated only after the digest file (when `--out` is
+set) is written and stdout is flushed, for both Markdown and `--json` output. If
+either output fails, history is preserved so a retry can still report new postings.
+Output and SQLite are separate operations: a database failure or process interruption
+after delivery can cause a retry to repeat postings. Flushing stdout confirms the
+local write, not that a downstream reader processed it.
+
 ## Option 1 — cron (Linux, and macOS if you do not mind it skipping while asleep)
 
 ```bash
