@@ -28,6 +28,11 @@ resume-radar watch ... --levels intern,new_grad,mid
 Postings blocked by citizenship, clearance, sponsorship, or ITAR are listed the same
 way, with the reason. Both lists exist so a wrong screen is visible rather than silent.
 
+HTML descriptions and list sections exclude `script` and `style` contents before
+screening and keyword scoring, so embedded code cannot supply requirements or offers.
+Lever's `descriptionPlain` is used as plain text. This is text extraction, not a
+browser visibility check: CSS rules and other hidden elements are not evaluated.
+
 ## Setup
 
 ```bash

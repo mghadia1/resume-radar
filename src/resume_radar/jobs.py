@@ -85,9 +85,21 @@ class _Stripper(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.parts: list[str] = []
+        self.raw_text_tag: str | None = None
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag in {"script", "style"}:
+            self.raw_text_tag = tag
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == self.raw_text_tag:
+            self.raw_text_tag = None
 
     def handle_data(self, data: str) -> None:
-        self.parts.append(data)
+        # HTMLParser delivers script/style bodies as raw data, including embedded
+        # tag-like strings. Code and CSS are not posting requirements.
+        if self.raw_text_tag is None:
+            self.parts.append(data)
 
     def text(self) -> str:
         return re.sub(r"\s+", " ", " ".join(self.parts)).strip()
