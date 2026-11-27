@@ -114,6 +114,12 @@ resume-radar score resume.pdf --jd jd.txt --company Acme --role "SWE Intern" --l
 bullet rewrites; it needs `ANTHROPIC_API_KEY`, and without one the deterministic score
 still runs and the suggestion step reports itself as unavailable.
 
+The rewrite parser ignores malformed entries and keeps valid siblings in order.
+`rewrites` must be a list; each entry needs a nonblank string `suggested` and string
+`original`/`why` fields (missing `original` or `why` defaults to an empty string).
+Accepted text is preserved verbatim. This validates response structure, not factual
+accuracy.
+
 ## Web service
 
 ```bash
