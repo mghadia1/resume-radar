@@ -108,7 +108,7 @@ def rewrite(bullets: list[str], *, api_key: str | None = None,
 
 
 def parse_rewrites(text: str) -> list[Suggestion]:
-    """Pull suggestions out of a model reply, tolerating fenced code blocks."""
+    """Parse fenced or plain JSON, skipping malformed rewrite entries."""
     cleaned = text.strip()
     if cleaned.startswith("```"):
         cleaned = cleaned.split("```")[1]
@@ -121,8 +121,19 @@ def parse_rewrites(text: str) -> list[Suggestion]:
         data = json.loads(cleaned[start:end + 1])
     except json.JSONDecodeError:
         return []
-    return [
-        Suggestion(item.get("original", ""), item.get("suggested", ""), item.get("why", ""))
-        for item in data.get("rewrites", [])
-        if item.get("suggested")
-    ]
+    rewrites = data.get("rewrites", [])
+    if not isinstance(rewrites, list):
+        return []
+    out = []
+    for item in rewrites:
+        if not isinstance(item, dict):
+            continue
+        original = item.get("original", "")
+        suggested = item.get("suggested", "")
+        why = item.get("why", "")
+        # Never stringify malformed fields into apparent resume text. Keep valid
+        # strings verbatim, with the existing defaults for missing metadata.
+        if (all(isinstance(value, str) for value in (original, suggested, why))
+                and suggested.strip()):
+            out.append(Suggestion(original, suggested, why))
+    return out
